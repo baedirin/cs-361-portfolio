@@ -21,6 +21,7 @@ def send_request(message):
     reply_data = socket.recv()
     return request_response(reply_data)
 
+
 # Process request response via JSON if no errors exist
 def request_response(reply_data):
     reply_data = reply_data.decode()
@@ -30,6 +31,7 @@ def request_response(reply_data):
         print('ERROR: ' + data['error_message'])
     else:
         response_data(data)
+
 
 # Build data & format for response, then check quest item
 def response_data(data):
