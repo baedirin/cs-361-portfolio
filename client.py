@@ -11,7 +11,8 @@ from bs4 import BeautifulSoup
 context = zmq.Context()
 
 
-# Send message request to microservice via ZeroMQ
+# Send message request via ZeroMQ socket, return
+# socket response
 def send_request(message):
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://localhost:5555")
@@ -22,7 +23,8 @@ def send_request(message):
     return request_response(reply_data)
 
 
-# Process request response via JSON if no errors exist
+# Process request response via JSON - if no errors exist,
+# send response
 def request_response(reply_data):
     reply_data = reply_data.decode()
     data = json.loads(reply_data)
@@ -33,41 +35,44 @@ def request_response(reply_data):
         response_data(data)
 
 
-# Build data & format for response, then check quest item
+# Build data & format for response, parse data,
+# then make check if item is a quest item
 def response_data(data):
     item_name = data['item_name']
-    price = data['price']
+    item_price = data['price']
     wiki_link = data['wiki_page']
-    print("Item name: " + item_name + "     Price: " + str(price) + " gold" + "     Wiki page: " + wiki_link)
+    print("Item name: " + item_name + "     Price: " + str(item_price) + " gold" + "     Wiki page: " + wiki_link)
     check_quest_item(item_name)
 
 
-# Check if the item is a quest item by scraping the quest item page
+# Check if the item is a quest item by scraping
+# the quest item page, verify status of quest item
 def check_quest_item(item_name):
-    url = "https://oldschool.runescape.wiki/w/Category:Quest_items"
-    response = requests.get(url)
+    quest_url = "https://oldschool.runescape.wiki/w/Category:Quest_items"
+    response = requests.get(quest_url)
     b_soup = BeautifulSoup(response.text, 'html.parser')
-    items = b_soup.find_all('li')
+    quest_items = b_soup.find_all('li')
 
-    for item in items:
+    for item in quest_items:
         if item_name.lower() in item.text.lower():
             print(item_name + " is a quest item.")
             break
 
 
 # Scrape price of item from Exchange item page
+# to be returned
 def scrape_price(item_name):
-    url = f"https://oldschool.runescape.wiki/w/Exchange:{item_name}"
-    response = requests.get(url)
+    exchange_url = f"https://oldschool.runescape.wiki/w/Exchange:{item_name}"
+    response = requests.get(exchange_url)
     b_soup = BeautifulSoup(response.text, 'html.parser')
-    wiki_link = b_soup.find('a', href=f"/w/Exchange:{item_name}")
+    exchange_link = b_soup.find('a', href=f"/w/Exchange:{item_name}")
 
-    if wiki_link:
+    if exchange_link:
         price_element = b_soup.find('span', class_='infobox-quantity-replace')
 
         if price_element:
-            price = price_element.text.strip()
-            return price
+            item_price = price_element.text.strip()
+            return item_price
 
     return 'Price not found.'
 
@@ -114,16 +119,17 @@ if __name__ == '__main__':
     """)
     print("Welcome to the OldSchool RuneScape Exchange Portal!\n")
 
-    exited = False
+    app_exited = False
 
-    while not exited:
+    # Begin user interaction for searching items
+    while not app_exited:
         item_name = input("Please enter an item to search or type 'Exit' to quit: ")
 
         if item_name.lower() == "exit":
-            if exited:
+            if app_exited:
                 break
             else:
-                exited = True
+                app_exited = True
                 print("Thank you for using the OldSchool RuneScape Grand Exchange Portal!")
                 continue
 
@@ -131,10 +137,10 @@ if __name__ == '__main__':
 
         while True:
             # Use scrape function to fetch the item name
-            price = scrape_price(item_name)
+            item_price = scrape_price(item_name)
 
-            if price != 'Price not found.':
-                print(f"Price: {price} coins")
+            if item_price != 'Price not found.':
+                print(f"Price: {item_price} coins")
 
             # Send request to microservice with the item name
             send_request(item_name)
@@ -151,10 +157,10 @@ if __name__ == '__main__':
 
                 # Terminate program if user chooses to do so
                 if search_again.lower() == "exit":
-                    if exited:
+                    if app_exited:
                         break
                     else:
-                        exited = True
+                        app_exited = True
                         print("Thank you for using the OldSchool RuneScape Grand Exchange Portal!")
                         break
                 else:
@@ -170,9 +176,9 @@ if __name__ == '__main__':
                     item_name = input("Please enter the item: ")
                     print("\n")
                 elif search_again.lower() == "n":
-                    if exited:
+                    if app_exited:
                         break
                     else:
-                        exited = True
+                        app_exited = True
                         print("Thank you for using the OldSchool RuneScape Grand Exchange Portal!")
                         break

@@ -60,7 +60,7 @@ def handle_error(result, socket):
     return False
 
 
-# Run concurrently with main.py via multiprocessing
+# Run concurrently with client.py via multiprocessing
 if __name__ == '__main__':
     microservice_process = multiprocessing.Process(target=run_microservice)
     microservice_process.start()
