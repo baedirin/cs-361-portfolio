@@ -20,20 +20,38 @@ def send_request(message):
     socket.send(message.encode())
 
     reply_data = socket.recv()
+    return request_response(reply_data)
+
+
+def request_response(reply_data):
     reply_data = reply_data.decode()
     data = json.loads(reply_data)
 
     if 'error_message' in data:
         print('ERROR: ' + data['error_message'])
-
     else:
-        item_name = data['item_name']
-        price = data['price']
-        wiki_link = data['wiki_page']
-        print("Item name: " + item_name + "     Price: " + str(price) + " gold" + "     Wiki page: " + wiki_link)
+        response_data(data)
 
-        # Check if the item is a quest item
-        check_quest_item(item_name)
+
+def response_data(data):
+    item_name = data['item_name']
+    price = data['price']
+    wiki_link = data['wiki_page']
+    print("Item name: " + item_name + "     Price: " + str(price) + " gold" + "     Wiki page: " + wiki_link)
+    check_quest_item(item_name)
+
+
+# Check if the item is a quest item by scraping the quest item page
+def check_quest_item(item_name):
+    url = "https://oldschool.runescape.wiki/w/Category:Quest_items"
+    response = requests.get(url)
+    b_soup = BeautifulSoup(response.text, 'html.parser')
+    items = b_soup.find_all('li')
+
+    for item in items:
+        if item_name.lower() in item.text.lower():
+            print(item_name + " is a quest item.")
+            break
 
 
 # Scrape price of item from Exchange item page
@@ -51,19 +69,6 @@ def scrape_price(item_name):
             return price
 
     return 'Price not found.'
-
-
-# Check if the item is a quest item by scraping the quest item page
-def check_quest_item(item_name):
-    url = "https://oldschool.runescape.wiki/w/Category:Quest_items"
-    response = requests.get(url)
-    b_soup = BeautifulSoup(response.text, 'html.parser')
-    items = b_soup.find_all('li')
-
-    for item in items:
-        if item_name.lower() in item.text.lower():
-            print(item_name + " is a quest item.")
-            break
 
 
 if __name__ == '__main__':
