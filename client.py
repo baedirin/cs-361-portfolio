@@ -11,8 +11,7 @@ from bs4 import BeautifulSoup
 context = zmq.Context()
 
 
-# Send message request to microservice via ZeroMQ,
-# process response via JSON load
+# Send message request to microservice via ZeroMQ
 def send_request(message):
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://localhost:5555")
@@ -22,7 +21,7 @@ def send_request(message):
     reply_data = socket.recv()
     return request_response(reply_data)
 
-
+# Process request response via JSON if no errors exist
 def request_response(reply_data):
     reply_data = reply_data.decode()
     data = json.loads(reply_data)
@@ -32,7 +31,7 @@ def request_response(reply_data):
     else:
         response_data(data)
 
-
+# Build data & format for response, then check quest item
 def response_data(data):
     item_name = data['item_name']
     price = data['price']
@@ -140,6 +139,7 @@ if __name__ == '__main__':
 
             show_info = input("Do you wish to see more info about the item? Enter Y/N: ")
 
+            # Show more info if user so chooses, fetch link for item
             if show_info.lower() == "y":
                 url = f"https://oldschool.runescape.wiki/w/{item_name}"
                 print(f"\nOpening {url}...\n")
@@ -147,6 +147,7 @@ if __name__ == '__main__':
 
                 search_again = input("Please enter another item to search or type 'Exit' to quit: ")
 
+                # Terminate program if user chooses to do so
                 if search_again.lower() == "exit":
                     if exited:
                         break
@@ -159,6 +160,7 @@ if __name__ == '__main__':
                     print("\n")
                     continue
 
+            # Repeat option to search another item
             elif show_info.lower() == "n":
                 search_again = input("Do you wish to search another item? Enter Y/N: ")
 
