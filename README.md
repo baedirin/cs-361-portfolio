@@ -32,48 +32,10 @@ This will immediately execute the application for use. Enter an item.
 7. Once the appropriate API information has been found, the microservice will send the response back to the client.
 8. This process can be repeated as necessary for as many items as the user needs.
 
-# How data is REQUESTED RuneScape Microservice
-
-The user will send the item name via a ZeroMQ socket, formatted as a string. The microservice will be listening on port 5555.
-
-Example call:
-
-```
-
-context = zmq.Context()
-socket = context.socket(zmq.REP)
-socket.bind("tcp://*:5555")
-message = receive_request(socket)
-...
-...
-...
-message = receive_request(socket)
-result = fetch_data_from_api(message)
-
-item_name = input("Please enter an item to search or type 'Exit' to quit: ")
-
-```
-
-# How data is RECEIVED via RuneScape Microservice
-
-```
-message = socket.recv()
-message = message.decode()
-...
-...
-reply_data = reply_data.decode()
-data = json.loads(reply_data)
-
-    if 'error_message' in data:
-        print('ERROR: ' + data['error_message'])
-    else:
-        response_data(data)
-
-```
-
 # Credits
 
 The OldSchool RuneScape Exchange Portal was built by Brittaney Nico Davis for CS 361 at Oregon State University, spring quarter of 2023. The RuneScape Microservice was built by Sabrina Estrada for CS 361 at Oregon State University, spring quarter of 2023. 
 
 # UML Diagram
+![OldSchool RuneScape Exchange Portal](https://github.com/baedirin/cs-361-portfolio/assets/16569870/4bc3fc52-30dc-415d-9eec-4b2a996827b0)
 
