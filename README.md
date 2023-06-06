@@ -34,7 +34,7 @@ This will immediately execute the application for use. Enter an item.
 
 # Credits
 
-The OldSchool RuneScape Exchange Portal was built by Brittaney Nico Davis for CS 361 at Oregon State University, spring quarter of 2023. The RuneScape Microservice was built by Sabrina Estrada for CS 361 at Oregon State University, spring quarter of 2023. 
+The OldSchool RuneScape Exchange Portal was built by Brittaney Davis (Nico) for CS 361 at Oregon State University, spring quarter of 2023. The RuneScape Microservice was built by Sabrina Estrada for CS 361 at Oregon State University, spring quarter of 2023. 
 
 # UML Diagram
 
